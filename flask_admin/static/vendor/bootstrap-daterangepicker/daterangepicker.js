@@ -531,7 +531,12 @@
             }
 
             if (this.singleDatePicker || start === null || end === null) {
-                start = moment(this.element.val(), this.format).utcOffset(this.timeZone);
+                var testDate = moment(this.element.val(), this.format, true);
+                this.invalidDateFormat = !testDate.isValid();
+                if (this.invalidDateFormat) {
+                    return;
+                }
+                start = testDate.utcOffset(this.timeZone); // moment(this.element.val(), this.format).utcOffset(this.timeZone);
                 end = start;
             }
 
@@ -667,6 +672,10 @@
 
         hide: function (e) {
             if (!this.isShowing) return;
+
+            if (this.invalidDateFormat) {
+                this.element[0].value = '';
+            }
 
             $(document)
               .off('.daterangepicker');
