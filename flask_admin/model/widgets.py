@@ -7,6 +7,12 @@ from flask_admin._compat import as_unicode, text_type
 from flask_admin.babel import gettext
 from flask_admin.helpers import get_url
 from flask_admin.form import RenderTemplateWidget
+from flask_admin import helpers as h
+
+
+def _is_bootstrap4():
+    view = h.get_current_view()
+    return view and view.admin.template_mode == 'bootstrap4'
 
 
 class InlineFieldListWidget(RenderTemplateWidget):
@@ -178,4 +184,10 @@ class XEditableWidget(object):
         else:
             raise Exception('Unsupported field type: %s' % (type(field),))
 
+        if _is_bootstrap4():
+            # The `data-template` attribute is handled internally by Bootstrap 4.
+            try:
+                kwargs.pop('data-template')
+            except KeyError:
+                pass
         return kwargs
